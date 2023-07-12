@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>webservice client</title>
+</head>
+<body>
+    
+    <p><button onclick="webservice()">Test</button><br><textarea style="width:100%;height:20rem"></textarea></p>
+
+    <script type="text/javascript">
+    const endpoint = `https://prod23.avant.test/webservice/rest/server.php`;
+    const auth_token = "51988b234bd2709e4501f02586bb18d7";
+    window.addEventListener("DOMContentLoaded",() => {
+        Array.from(document.querySelectorAll('button')).forEach(btn => btn.addEventListener('click', webservice) );
+    });
+
+    function performCall(serviceName, callback) {
+
+        const fd = new FormData();
+        fd.append('wstoken', auth_token);
+        fd.append('wsfunction', serviceName);
+
+        fetch(endpoint, {
+            method: "post",
+            headers: {
+                'Accept': 'application/json'
+            },
+            body: fd
+        })
+        .then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error(response.status);
+            }
+        })
+        .then(function (xml) {
+            const parser = new DOMParser();
+            const dom = parser.parseFromString(xml, "application/xml");
+            let data = dom.querySelector("KEY[name='courses'] > VALUE").textContent;
+            return JSON.parse(data);
+        })
+        .then(function(data) {
+            callback(data);
+        })
+        .catch((err) => console.dir );
+    }
+
+    function webservice() {
+        performCall('avantws_courseinfo', function(data) {
+            document.querySelector('textarea').value = JSON.stringify(data, null, 2);
+        });
+    }
+
+    </script>
+</body>
+</html>

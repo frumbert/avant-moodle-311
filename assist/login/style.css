@@ -1,0 +1,84 @@
+html {
+  max-width: 70ch;
+  margin: auto;
+  font-family: system-ui, 'Segoe UI', Roboto, Cantarell,
+    'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+body {
+  background: #f5f5f5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 3em 0 1em;
+}
+
+p, ul, ol {
+  margin-bottom: 2em;
+}
+
+small {
+  font-size: 80%;
+}
+
+sub, sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+pre, code, kbd {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+/* end css reset */
+
+html, body {
+    min-height:100vh;
+}
+
+input {
+
+  font-size: 1.25rem;
+  padding: 1rem;
+  border-radius: .5rem;
+  border-width: 1px;
+  border-style: solid;
+
+}
+
+input[type='submit'] {
+  background: #0F3A8B;
+  border-bottom-color: #00000020;
+  border-right-color: #00000020;
+  border-top-color: #ffffff20;
+  border-top-color: #ffffff20;
+  color: white;
+  box-shadow: none;
+}
+
+p.feedback:not(:empty) {
+  background-color: #e49999;
+  padding: 1rem;
+  border-radius: .5rem;
+}
+p.feedback.ok:not(:empty) {
+  background-color: #99e4b4;
+}
+
+.container {
+  background-color: white;
+  box-shadow: 0 3px 5px #00000040;
+  padding: 1rem;
+  border-radius: 1rem;
+}

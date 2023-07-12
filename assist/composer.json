@@ -1,0 +1,6 @@
+{
+    "require": {
+        "jaybizzle/crawler-detect": "^1.2",
+        "phpmailer/phpmailer": "^6.6"
+    }
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>webservice client</title>
+    <style>
+    textarea { width: 100%; height: 10rem; }
+    </style>
+</head>
+<body>
+    
+    <h2>Catalogue data services</h2>
+    <p><button data-name="avantws_courseinfo">Avant Course Catalogue</button><br><textarea></textarea></p>
+    <h2>Other built-in services</h2>
+    <p><button data-name="core_course_get_categories">Categories</button><br><textarea></textarea></p>
+    <p><button data-name="core_course_get_courses">Courses</button><br><textarea></textarea></p>
+
+    <script type="text/javascript">
+    const protocol = "rest"; // or xmlrpc
+    const service_url = `https://prod23.avant.test/webservice/${protocol}/server.php`;
+    const auth_token = "51988b234bd2709e4501f02586bb18d7";
+    window.addEventListener("DOMContentLoaded",() => {
+        Array.from(document.querySelectorAll('button')).forEach(btn => btn.addEventListener('click', webservice) );
+    });
+
+    function performCall(serviceName, serviceParams, domOutput) {
+
+        const fd = new FormData();
+        fd.append('wstoken', auth_token);
+        fd.append('wsfunction', serviceName);
+        for (const [key, value] of Object.entries(serviceParams)) {
+            fd.append(key, value);
+        }
+
+        // perform a moodle webservice call using fetch
+        fetch(service_url, {
+            method: "post",
+            headers: {
+                'Accept': 'application/json'
+            },
+            body: fd
+        })
+        .then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error(response.status);
+            }
+        })
+        .then(function (xml) {
+            const parser = new DOMParser();
+            const dom = parser.parseFromString(xml, "application/xml");
+            let data = [];
+            switch (serviceName) {
+                case "core_course_get_categories":
+                case "core_course_get_courses":
+                Array.from(dom.querySelectorAll('RESPONSE > MULTIPLE > SINGLE')).forEach((node) => {
+                    let category = {};
+                    Array.from(node.querySelectorAll("KEY")).forEach((key) => {
+                        category[key.getAttribute("name")] = key.querySelector("VALUE").textContent;
+                    });
+                    data.push(category);
+                });
+                break;
+
+                case "core_course_get_courses":
+                break;
+
+                case "avantws_courseinfo":
+                data = dom.querySelector("KEY[name='courses'] > VALUE").textContent;
+                if (data) data = JSON.parse(data);
+                break;
+            }
+            domOutput.value = JSON.stringify(data, null, 2);
+        })
+        .catch((err) => console.dir );
+    }
+
+    function webservice(e) {
+        const serviceName = e.target.dataset.name;
+        const serviceParams = JSON.parse(e.target.dataset.params || '[]');
+        const domOutput = e.target.parentNode.querySelector('textarea');
+        performCall(serviceName, serviceParams, domOutput);
+    }
+
+    </script>
+</body>
+</html>
